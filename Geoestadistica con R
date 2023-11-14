@@ -1,0 +1,34 @@
+#  Estudio del libro "An introduction to (geo)statistics with R" 
+#  D G Rossiter Cornell University, Section of Soil & Crop Sciences
+
+
+install.packages(c("sp", "gstat"), dependencies=TRUE)  # instalación de paquetes
+library(sp)
+library(gstat)
+library(tidyverse)
+data(package="gstat")
+View(meuse)
+help(meuse)
+
+hist(meuse$zinc, breaks = 16)
+rug(meuse$zinc)
+summary(meuse$zinc)
+
+hist(meuse$elev)
+rug(meuse$elev)
+summary(meuse$ele)
+
+# Correlación entre dos variables "scatter plot"
+meuse<-mutate(meuse, log_cu=log10(meuse$copper), log_zn=log10(meuse$zinc))
+plot(meuse$log_cu ~ meuse$log_zn)
+pairs(data=meuse, ~ zinc+copper+cadmium + elev + lead)
+
+#encontrando índices (filas) en la matriz de valores particulares
+#En gráfica log_cu vs log_zn se observan 4 valores alejados de la tendencia lineal
+
+indices<-which(meuse$log_zn<2.5 & meuse$log_cu>1.6); indices
+
+meuse[indices,]
+plot(log(meuse$elev) ~ log(meuse$dist.m))
+ls()
+
