@@ -124,3 +124,25 @@ anova(m.lzn.ff.lcu.i, m.lzn.lcu)
 #Pero el % de variabilidad explicado en la práctica sólo aumenta un poco, así 
 #que es suficiente explicar la concentración de Zn con la concentración de Cu medida.
 
+### -------------------------------------------------------------------------###
+
+# OBJETOS ESPACIALMENTE EXPLÍCITOS EN R 
+
+class(meuse) # ver qué clase de objeto es "meuse"
+coordinates(meuse) <- c("x","y") #convierte a "meuse" en un objeto espacial
+class(meuse)
+str(meuse) #para ver la estructura de la clase SpatialPointsDataFrame
+
+plot(meuse, asp=1, pch=1) #dibuja los puntos en donde se realizaron mediciones
+data(meuse.riv) #llama el dataset de puntos que dibujan el rio Meuse
+lines(meuse.riv) #dibuja las lineas del rio usando el dataset meuse.riv
+
+
+data(meuse.grid) #llama el dataset meuse.grid
+class(meuse.grid)
+coordinates(meuse.grid) <-c ("x","y")
+gridded(meuse.grid) <- TRUE; fullgrid <- TRUE
+class(meuse.grid)
+spplot(meuse.grid)
+
+
