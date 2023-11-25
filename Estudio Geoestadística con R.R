@@ -151,3 +151,48 @@ coordinates(meuse.grid) <-c ("x","y")
 gridded(meuse.grid) <- TRUE; fullgrid <- TRUE
 class(meuse.grid)
 spplot(meuse.grid)
+
+#Árboles de regresión 
+library(rpart)
+library(rpart.plot)
+
+m.lzn.rp <- rpart(log_zn ~ ffreq + dist + elev,
+                  data=meuse,
+                  minsplit=2,
+                  cp=0.003)  #árbol de regresión con cantidad mínima de 2 obs. 
+                             #en cada rama y una mejora mínima de 0.3% en R2 con
+                             #cada división que se haga
+
+print(m.lzn.rp)
+rpart.plot(m.lzn.rp, digits=3, type=4, extra=1)
+?rpart.object
+sum(m.lzn.rp$frame$var == '<leaf>')
+
+x <- m.lzn.rp$variable.importance
+data.frame(variableImportance = 100 * x / sum(x))
+printcp(m.lzn.rp)
+plotcp(m.lzn.rp)
+head(cp.table <- m.lzn.rp[["cptable"]],8)
+(cp.ix <- which.min(cp.table[,"xerror"])) #Encontrando el mínimo error de validación
+                                          #cruzada. 
+print(cp.table[cp.ix,])
+
+(cp.min.plus.sd <- cp.table[cp.ix,"xerror"] + cp.table[cp.ix,"xstd"])
+[1] 0.310379
+cp.ix.sd <- min(which(cp.table[,"xerror"] < cp.min.plus.sd)) #encuentra el error
+#en la validación cruzada inmediatamente menor al xerror + una desvición estándar
+#por encima
+print(cp.table[cp.ix.sd,])
+cp.min <- cp.table[cp.ix,"CP"]
+#ahora se va a construir un árbol podado en el mínimo valor cp dado por el mínimo
+#xerror, es decir el cp correspondiente el mínimo xerror.
+
+(m.lzn.rpp <- prune(m.lzn.rp, cp=cp.min))
+rpart.plot(m.lzn.rpp, digits=3, type=4, extra=1)
+mean(meuse$log_zn)
+sum(m.lzn.rpp$frame$var == '<leaf>')
+sum(m.lzn.rpp$frame$var != '<leaf>')
+m.lzn.rpp$variable.importance
+
+
+
