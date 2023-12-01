@@ -194,5 +194,29 @@ sum(m.lzn.rpp$frame$var == '<leaf>')
 sum(m.lzn.rpp$frame$var != '<leaf>')
 m.lzn.rpp$variable.importance
 
+#El árbol podado tiene 10 salidas, es decir 10 valores predichos de logZn 
+
+p.rpp <- predict(m.lzn.rpp, newdata=meuse) #se guardan los valores predichos al dataframe
+length(unique(p.rpp)) #aquí se ve que son 10 los valores diferentes, las 10 salidas del árbol podado
+
+summary(r.rpp <- meuse$log_zn - p.rpp)
+sqrt(sum(r.rpp^2)/length(r.rpp))
+plot(meuse$log_zn ~ p.rpp, asp=1, pch=20, xlab="fitted", ylab="actual",
+     xlim=c(2,3.3), ylim=c(2,3.3),
+     main="log10(Zn), Meuse topsoils, Regression Tree")
+grid()
+abline(0,1)
+
+#Predecir sobre el área de estudio con árboles de regresión
+#en el objeto de meuse.grid  sólo se tiene la distancia normalizada, no se tiene la elevación
+#debemos ingresar los datos de elevación al grid para poder usar el modelo m.lzn.rpp 
+#ya que este modelo usó como variables significativas las distancias normalizadas 
+#y las elevaciones. Para llenar todas las áreas del grid con las elevaciones 
+#toca usar las elevaciones realmente medidas e interpolar las zonas no medidas para
+#completar esas áreas o cajas del grid. 
+
+#Predicción de elevaciones sobre el grid por interpolación de la inversa de la distancia^2
+
+
 
 
