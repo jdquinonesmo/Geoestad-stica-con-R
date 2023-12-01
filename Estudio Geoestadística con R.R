@@ -216,7 +216,10 @@ abline(0,1)
 #completar esas áreas o cajas del grid. 
 
 #Predicción de elevaciones sobre el grid por interpolación de la inversa de la distancia^2
+#se puede usar la función idw que no usa kriging sino la inversa de la distancia a una potencia
+#con el argumento idp. 
 
-
+tmp <- idw(elev ~ 1, locations=meuse,
+           nmax=16, idp=2, newdata=meuse.grid)
 
 
