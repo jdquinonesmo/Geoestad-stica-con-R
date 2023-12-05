@@ -222,4 +222,39 @@ abline(0,1)
 tmp <- idw(elev ~ 1, locations=meuse,
            nmax=16, idp=2, newdata=meuse.grid)
 
+meuse.grid$elev <- tmp$var1.pred; rm(tmp)
+pts.s <- list("sp.points", meuse, col="darkgreen",
+              pch=1, cex=2*meuse$elev/max(meuse$elev))
+print(spplot(meuse.grid, zcol="elev",
+             col.regions=heat.colors(64),
+             main="Elevation (m)",
+             sub="Interpolated by IDW^2, 16 neighbours",
+             sp.layout = list(pts.s)))
 
+rt.grid <- predict(m.lzn.rpp, newdata=meuse.grid)
+meuse.grid$rt.pred <- rt.grid; rm(rt.grid)
+spplot(meuse.grid, zcol="rt.pred",
+       main="Regression tree prediction, log10(Zn)")
+
+#                   Tarea 
+
+#construya un modelo lineal para predecir log10Zn usando flooding
+#frequency, distance to river, y relative elevation, y compare su desempeño
+#con el modelo de árbol de regresión
+m.lzn.f.ele.dis<-lm(data=meuse, log_zn ~ ffreq + dist + elev)
+p.lm.zn <- predict(m.lzn.f.ele.dis, newdata=meuse)
+summary(r.lm.zn <- meuse$log_zn - p.lm.zn)
+sqrt(sum(r.lm.zn^2)/length(r.lm.zn))
+
+plot(meuse$log_zn ~ p.lm.zn, asp=1, pch=20, xlab="fitted", ylab="actual",
+     xlim=c(2,3.3), ylim=c(2,3.3),
+     main="log10(Zn), Meuse topsoils, Lineal Regress: elev + dist + ffreq")
+grid()
+abline(0,1)
+
+lm.grid <- predict(m.lzn.f.ele.dis, newdata=meuse.grid)
+meuse.grid$lm.pred <- lm.grid; rm(lm.grid)
+spplot(meuse.grid, zcol="lm.pred",
+       main="Lineal Regression prediction, log10(Zn)")
+par(mfrow=c(1,2))
+summary(m.lzn.f.ele.dis)
